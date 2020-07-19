@@ -4,7 +4,11 @@ from typing import Union
 VALID_FIELDS = {
     'ASSET_FIELDS': ('Name', 'Description', 'Status', 'Owner', 'HeldBy', 'Contact'),
     'QUEUE_FIELDS': ('Name', 'Description', 'Lifecycle', 'SubjectTag', 'CorrespondAddress', 'CommentAddress'),
-    'TICKET_FIELDS': ()
+    'TICKET_FIELDS': ('Queue', 'Status', 'Owner', 'Requestors', 'Cc', 'AdminCc', 'Content', 'ContentType'),
+    'USER_FIELDS': ('EmailAddress', 'RealName', 'NickName', 'Gecos', 'Lang', 'Timzone', 'FreeformContactInfo',
+                    'SetEnabled', 'Enabled', 'SetPrivileged', 'CurrentPass', 'Pass1', 'Pass2', 'Organization',
+                    'Address1', 'Address2', 'City', 'State', 'Zip', 'Country', 'HomePhone', 'WorkPhone',
+                    'MobilePhone', 'PagerPhone', 'Comments')
 }
 
 
@@ -288,14 +292,89 @@ class RTClient:
 
         return response.status_code == 201
 
-    def delete_asset(self, asset_id: Union[str, int]):
+    def delete_asset(self, asset_id: Union[str, int]) -> bool:
         """
-        Delete an asset by specifying its ID
+        Delete an asset by specifying its ID.
         :param asset_id: Unique asset identifier - May be a string or integer.
         :return:
         """
 
         response = self.session.delete(self.server + f'/asset/{asset_id}')
+
+        return response.status_code == 201
+
+    def get_user(self, user_id: Union[str, int]) -> dict:
+        """
+        View a single user's metadata.
+        :param user_id: Unique user identifier (may be string or integer).
+        :return:
+        """
+
+        response = self.session.get(self.server + f'/user/{user_id}')
+
+        if response.status_code == 200:
+            return response.json()
+
+    def get_user_history(self, user_id: Union[str, int]) -> dict:
+        """
+        View an individual user's transaction history.
+        :param user_id: Unique user identifier (may be string or integer).
+        :return:
+        """
+
+        response = self.session.get(self.server + f'/user/{user_id}/history')
+
+        if response.status_code == 200:
+            return response.json()
+
+    def create_user(self, username: str, **kwargs) -> bool:
+        """
+        Create a user by supplying (at least) a username and a series of arguments.
+        :param username: Supply a string with which this user will login to RT.
+        :param kwargs: Valid arguments: 'EmailAddress', 'RealName', 'NickName', 'Gecos', 'Lang', 'Timzone',
+                    'FreeformContactInfo', 'SetEnabled', 'Enabled', 'SetPrivileged', 'CurrentPass', 'Pass1', 'Pass2',
+                    'Organization', 'Address1', 'Address2', 'City', 'State', 'Zip', 'Country', 'HomePhone', 'WorkPhone',
+                    'MobilePhone', 'PagerPhone', 'Comments'
+        :return:
+        """
+        for argument in kwargs.keys():
+            if argument not in VALID_FIELDS['USER_FIELDS']:
+                print(f"Error: {argument} not a valid user field.\n"
+                      f"Valid user fields: {', '.join(VALID_FIELDS['USER_FIELDS'])}")
+                return False
+
+        payload = {'Name': username}
+
+        payload.update(kwargs)
+
+        response = self.session.post(self.server + '/user', json=payload)
+
+        return response.status_code == 201
+
+    def update_user(self, user_id: Union[str, int], **kwargs) -> bool:
+        """
+        Update a user by specifying their ID.
+        :param user_id: Supply unique user identifier (may be string or integer).
+        :param kwargs: See 'Create User' for valid keyword arguments.
+        :return:
+        """
+        for argument in kwargs.keys():
+            if argument not in VALID_FIELDS['USER_FIELDS']:
+                print(f"Error: {argument} not a valid user field.\n"
+                      f"Valid user fields: {', '.join(VALID_FIELDS['USER_FIELDS'])}")
+                return False
+
+        response = self.session.put(self.server + f'/user/{user_id}', json=kwargs)
+
+        return response.status_code == 201
+
+    def disable_user(self, user_id: Union[str, int]) -> bool:
+        """
+        Disable a single user by specifying their ID.
+        :param user_id: Unique user identifier (may be string or integer).
+        :return:
+        """
+        response = self.session.delete(self.server + f'/user/{user_id}')
 
         return response.status_code == 201
 
