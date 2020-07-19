@@ -1,18 +1,20 @@
 import requests
 from typing import Union
 
+VALID_QUEUE_FIELDS = ('Name', 'Description', 'Lifecycle', 'SubjectTag', 'CorrespondAddress', 'CommentAddress')
+
 
 class RTClient:
 
     def __init__(self, server: str, token: str, verify_cert: bool = True):
         """
-        :param server: Define your RT server along with port (IE, 127.0.0.1:8000)
+        :param server: Define your RT server along with port (IE, http://127.0.0.1:8000)
         :param token: Supply the token you provisioned via the Web UI
         :param verify_cert: Specify whether you'd like SSL verification enabled
 
         Example: rt_client = RTClient(<server>, <token>, verify_cert=False)
         """
-        self.server = server.rstrip('/') + '/REST/2.0/'  # Remove trailing whack(s) if any are present
+        self.server = server.rstrip('/') + '/REST/2.0'  # Remove trailing whack(s) if any are present
         self.session = requests.session()
         self.session.verify = verify_cert
         self.session.headers = {'Authorization': f'token {token}',
@@ -27,6 +29,66 @@ class RTClient:
 
         if response.status_code == 200:
             return response.json()
+
+    def get_queue(self, queue_id: Union[str, int]) -> dict:
+        """
+        View a single queue's attributes by supplying its unique identifier.
+        :param queue_id: Unique queue identifier
+        :return:
+        """
+
+        response = self.session.get(self.server + f'/queue/{queue_id}')
+
+        if response.status_code == 200:
+            return response.json()
+
+    def create_queue(self, name: str, **kwargs) -> bool:
+        """
+        Create a queue by supplying (at the very least) a name which will act as the queue's title.
+        :param name: Name by which the queue will be known.
+        :param kwargs: Valid arguments: ''Description', 'Lifecycle', 'SubjectTag','CorrespondAddress', 'CommentAddress'
+        :return:
+        """
+        for argument in kwargs.keys():
+            if argument not in VALID_QUEUE_FIELDS:
+                print(f"Error: {argument} not a valid queue field.\n"
+                      f"Valid queue fields: {', '.join(VALID_QUEUE_FIELDS)}")
+
+        payload = {
+            'Name': name
+        }
+
+        payload.update(kwargs)
+
+        response = self.session.post(self.server + '/queue', json=payload)
+
+        return response.status_code == 201
+
+    def update_queue(self, queue_id: Union[str, int], **kwargs) -> bool:
+        """
+        Update a queue by supplying its unique identifier and a series of keyword arguments
+        :param queue_id: Unique identifier for the queue.
+        :param kwargs: Valid arguments: ''Description', 'Lifecycle', 'SubjectTag','CorrespondAddress', 'CommentAddress'
+        :return:
+        """
+        for argument in kwargs.keys():
+            if argument not in VALID_QUEUE_FIELDS:
+                print(f"Error: {argument} not a valid queue field.\n"
+                      f"Valid queue fields: {', '.join(VALID_QUEUE_FIELDS)}")
+
+        response = self.session.put(self.server + f'/queue/{queue_id}', json=kwargs)
+
+        return response.status_code == 201
+
+    def disable_queue(self, queue_id: Union[str, int]) -> bool:
+        """
+        Disable a single queue.
+        :param queue_id: Unique identifier for the target queue.
+        :return:
+        """
+        response = self.session.delete(self.server + f'/queue/{queue_id}')
+
+        return response.status_code == 201
 
     def get_ticket(self, ticket_id: Union[str, int]) -> dict:
         """
