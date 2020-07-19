@@ -20,6 +20,12 @@ TrackerAsisst is a Python library for interacting with Request Tracker's REST AP
 ### Search
 - Search tickets using Ticket SQL
 
+### Users
+- Create new users
+- Update existing users
+- Disable/Delete existing users
+- View metadata related to an existing user
+
 ### Assets
 - Create a new asset
 - Update an existing asset's metadata
