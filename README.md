@@ -2,6 +2,35 @@
 
 TrackerAsisst is a Python library for interacting with Request Tracker's REST API 2.0 (pre-installed as of RT 5.0.0).
 
+## Supported Actions
+### Tickets
+- Create new tickets
+- Update existing ticket
+- Comment on an existing ticket
+- Delete existing ticket
+- View a ticket's metadata
+- Retrieve a ticket's history
+
+### Queues
+- Create new queues
+- Update existing queue's metadata
+- View an existing queue's details
+- Disable an existing queue
+
+### Search
+- Search tickets using Ticket SQL
+
+### Assets
+- Create a new asset
+- Update an existing asset's metadata
+- View an asset's details
+- Delete an existing asset
+
+## Installation
+```python
+pip install TrackerAssist
+```
+
 ## Usage
 
 ```python
