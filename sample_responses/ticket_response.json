@@ -1,0 +1,132 @@
+{
+  "Started": "1970-01-01T00:00:00Z",
+  "Created": "2020-07-16T16:25:55Z",
+  "InitialPriority": "0",
+  "TimeEstimated": "0",
+  "Starts": "1970-01-01T00:00:00Z",
+  "Creator": {
+    "type": "user",
+    "id": "root",
+    "_url": "http://52.14.77.115:8080/REST/2.0/user/root"
+  },
+  "AdminCc": [],
+  "Status": "new",
+  "Cc": [],
+  "id": 1,
+  "Priority": "0",
+  "Due": "1970-01-01T00:00:00Z",
+  "Owner": {
+    "id": "root",
+    "_url": "http://52.14.77.115:8080/REST/2.0/user/root",
+    "type": "user"
+  },
+  "CustomFields": [
+    {
+      "values": [
+        "127.0.0.1",
+        "192.168.3.1",
+        "44.44.44.245"
+      ],
+      "type": "customfield",
+      "name": "IPv4",
+      "id": "2",
+      "_url": "http://52.14.77.115:8080/REST/2.0/customfield/2"
+    },
+        {
+      "values": [
+        "google.com"
+      ],
+      "type": "customfield",
+      "name": "Domain",
+      "id": "3",
+      "_url": "http://52.14.77.115:8080/REST/2.0/customfield/3"
+    }
+  ],
+  "_hyperlinks": [
+    {
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1",
+      "id": "1",
+      "type": "ticket",
+      "ref": "self"
+    },
+    {
+      "id": "2",
+      "_url": "http://52.14.77.115:8080/REST/2.0/customfield/2",
+      "ref": "customfield",
+      "name": "IPv4",
+      "type": "customfield"
+    },
+    {
+      "ref": "history",
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/history"
+    },
+    {
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/correspond",
+      "ref": "correspond"
+    },
+    {
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/comment",
+      "ref": "comment"
+    },
+    {
+      "to": "open",
+      "from": "new",
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/correspond",
+      "ref": "lifecycle",
+      "label": "Open It",
+      "update": "Respond"
+    },
+    {
+      "to": "resolved",
+      "from": "new",
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/comment",
+      "ref": "lifecycle",
+      "label": "Resolve",
+      "update": "Comment"
+    },
+    {
+      "update": "Respond",
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1/correspond",
+      "from": "new",
+      "to": "rejected",
+      "ref": "lifecycle",
+      "label": "Reject"
+    },
+    {
+      "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1",
+      "from": "new",
+      "to": "deleted",
+      "ref": "lifecycle",
+      "label": "Delete"
+    }
+  ],
+  "EffectiveId": {
+    "_url": "http://52.14.77.115:8080/REST/2.0/ticket/1",
+    "id": "1",
+    "type": "ticket"
+  },
+  "Type": "ticket",
+  "Subject": "Test ticket",
+  "Resolved": "1970-01-01T00:00:00Z",
+  "Requestor": [
+    {
+      "type": "user",
+      "_url": "http://52.14.77.115:8080/REST/2.0/user/root",
+      "id": "root"
+    }
+  ],
+  "TimeLeft": "0",
+  "LastUpdatedBy": {
+    "type": "user",
+    "_url": "http://52.14.77.115:8080/REST/2.0/user/root",
+    "id": "root"
+  },
+  "LastUpdated": "2020-07-16T19:52:32Z",
+  "FinalPriority": "0",
+  "TimeWorked": "0",
+  "Queue": {
+    "_url": "http://52.14.77.115:8080/REST/2.0/queue/1",
+    "id": "1",
+    "type": "queue"
+  }
+}
