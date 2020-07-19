@@ -1,7 +1,11 @@
 import requests
 from typing import Union
 
-VALID_QUEUE_FIELDS = ('Name', 'Description', 'Lifecycle', 'SubjectTag', 'CorrespondAddress', 'CommentAddress')
+VALID_FIELDS = {
+    'ASSET_FIELDS': ('Name', 'Description', 'Status', 'Owner', 'HeldBy', 'Contact'),
+    'QUEUE_FIELDS': ('Name', 'Description', 'Lifecycle', 'SubjectTag', 'CorrespondAddress', 'CommentAddress'),
+    'TICKET_FIELDS': ()
+}
 
 
 class RTClient:
@@ -42,6 +46,12 @@ class RTClient:
         if response.status_code == 200:
             return response.json()
 
+    def get_queue_history(self, queue_id: Union[str, int]) -> dict:
+        response = self.session.get(self.server + f'/queue/{queue_id}')
+
+        if response.status_code == 200:
+            return response.json()
+
     def create_queue(self, name: str, **kwargs) -> bool:
         """
         Create a queue by supplying (at the very least) a name which will act as the queue's title.
@@ -50,9 +60,10 @@ class RTClient:
         :return:
         """
         for argument in kwargs.keys():
-            if argument not in VALID_QUEUE_FIELDS:
+            if argument not in VALID_FIELDS['QUEUE_FIELDS']:
                 print(f"Error: {argument} not a valid queue field.\n"
-                      f"Valid queue fields: {', '.join(VALID_QUEUE_FIELDS)}")
+                      f"Valid queue fields: {', '.join(VALID_FIELDS['QUEUE_FIELDS'])}")
+                return False
 
         payload = {
             'Name': name
@@ -72,9 +83,10 @@ class RTClient:
         :return:
         """
         for argument in kwargs.keys():
-            if argument not in VALID_QUEUE_FIELDS:
+            if argument not in VALID_FIELDS['QUEUE_FIELDS']:
                 print(f"Error: {argument} not a valid queue field.\n"
-                      f"Valid queue fields: {', '.join(VALID_QUEUE_FIELDS)}")
+                      f"Valid queue fields: {', '.join(VALID_FIELDS['QUEUE_FIELDS'])}")
+                return False
 
         response = self.session.put(self.server + f'/queue/{queue_id}', json=kwargs)
 
@@ -221,3 +233,69 @@ class RTClient:
 
         if response.status_code == 200:
             return response.json()
+
+    def get_asset(self, asset_id: Union[str, int]) -> dict:
+        """
+        Retrieve metadata related to a target asset.
+        :param asset_id: Unique asset identifier - May be string or integer.
+        :return:
+        """
+
+        response = self.session.get(self.server + f'/asset/{asset_id}')
+
+        if response.status_code == 200:
+            return response.json()
+
+    def create_asset(self, name: str, **kwargs) -> bool:
+        """
+        Create an asset by supplying (at least) a name by which the asset will be known.
+        :param name: Title for the asset.
+        :param kwargs: Valid arguments: 'Description', 'Status', 'Owner', 'HeldBy', 'Contact'
+        :return:
+        """
+
+        for argument in kwargs.keys():
+            if argument not in VALID_FIELDS['ASSET_FIELDS']:
+                print(f"Error: {argument} not a valid asset field.\n"
+                      f"Valid asset fields: {', '.join(VALID_FIELDS['ASSET_FIELDS'])}")
+                return False
+
+        payload = {
+            'Name': name
+        }
+
+        payload.update(kwargs)
+
+        response = self.session.post(self.server + '/asset', json=payload)
+
+        return response.status_code == 201
+
+    def update_asset(self, asset_id: Union[str, int], **kwargs) -> bool:
+        """
+        Update an asset's metadata by specifying its ID.
+        :param asset_id: Unique asset identifier - May be string or integer.
+        :param kwargs: Valid arguments: 'Name', 'Description', 'Status', 'Owner', 'HeldBy', 'Contact'
+        :return:
+        """
+
+        for argument in kwargs.keys():
+            if argument not in VALID_FIELDS['ASSET_FIELDS']:
+                print(f"Error: {argument} not a valid asset field.\n"
+                      f"Valid asset fields: {', '.join(VALID_FIELDS['ASSET_FIELDS'])}")
+                return False
+
+        response = self.session.put(self.server + f'/asset/{asset_id}', json=kwargs)
+
+        return response.status_code == 201
+
+    def delete_asset(self, asset_id: Union[str, int]):
+        """
+        Delete an asset by specifying its ID
+        :param asset_id: Unique asset identifier - May be a string or integer.
+        :return:
+        """
+
+        response = self.session.delete(self.server + f'/asset/{asset_id}')
+
+        return response.status_code == 201
+
