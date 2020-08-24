@@ -14,7 +14,8 @@ VALID_FIELDS = {
 
 class RTClient:
 
-    def __init__(self, server: str, token: str, verify_cert: bool = True):
+    def __init__(self, server: str, token: str = None, username: str = None,
+                 password: str = None, verify_cert: bool = True):
         """
         :param server: Define your RT server along with port (IE, http://127.0.0.1:8000)
         :param token: Supply the token you provisioned via the Web UI
@@ -25,8 +26,18 @@ class RTClient:
         self.server = server.rstrip('/') + '/REST/2.0'  # Remove trailing whack(s) if any are present
         self.session = requests.session()
         self.session.verify = verify_cert
-        self.session.headers = {'Authorization': f'token {token}',
-                                'Content-Type': 'application/json'}
+
+        # If a token is supplied, use it; If not, authenticate using supplied credentials.
+        if token:
+            self.session.headers = {'Authorization': f'token {token}',
+                                    'Content-Type': 'application/json'}
+
+        elif username and password:
+            data = {'user': username, 'pass': password}
+            self.session.post(server, data=data)
+
+        else:
+            print("Error! No token or credentials supplied - Transactions may fail!")
 
     def get_queues(self) -> dict:
         """
