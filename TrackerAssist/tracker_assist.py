@@ -1,4 +1,6 @@
+import json
 import requests
+from requests_toolbelt import MultipartEncoder
 from typing import Union
 
 VALID_FIELDS = {
@@ -205,22 +207,28 @@ class RTClient:
 
         return response.status_code == 201
 
-    def upload_file(self, ticket_id: Union[str, int], file_name: str, file_path: str) -> bool:
+    def upload_file(self, ticket_id: Union[str, int], file_name: str, file_path: str, file_type: str,
+                    subject: str = 'File Upload') -> bool:
         """
-        Upload a file to a single ticket. This method is still a little buggy for now.
+        Upload a file to a single ticket.
         :param ticket_id: Value may be a string or integer due to flexibility of f-string interpolation.
         :param file_name: Name of file.
         :param file_path: Absolute or relative path where the target file may be found.
+        :param file_type: Specify file type (IE, 'text/plain').
+        :param subject: Supply a subject to use for the upload - Defaults to 'File Upload'.
         :return:
         """
-        self.session.headers['Content-Type'] = 'multipart/form-data'
 
-        files = {'file': (file_name, open(file_path, 'rb'))}
+        payload = MultipartEncoder(
+            fields={
+                'Attachments': (file_name, open(file_path, 'rb'), file_type),
+                'JSON': json.dumps({'Subject': subject})
+            }
+        )
 
-        response = self.session.post(self.server + f'/ticket/{ticket_id}/comment',
-                                     json={'Attachment': f'{file_name}'}, files=files)
+        self.session.headers['Content-Type'] = payload.content_type
 
-        self.session.headers['Content-Type'] = 'application/json'
+        response = self.session.post(self.server + f'/ticket/{ticket_id}/comment', data=payload)
 
         return response.status_code == 200
 

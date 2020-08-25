@@ -7,7 +7,7 @@ with open(path.join(current_direct, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='TrackerAssist',
-    version='0.1.4',
+    version='0.1.5',
     packages=['TrackerAssist'],
     url='https://github.com/tyler-tee/trackerassist',
     license='GPLv3',
